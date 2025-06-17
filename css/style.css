@@ -1,0 +1,47 @@
+/* css/style.css */
+
+/*
+   Các tùy chỉnh CSS bổ sung.
+   Hầu hết giao diện đã được xử lý bằng Tailwind CSS trong index.html.
+   Bạn có thể thêm các hiệu ứng phức tạp hơn hoặc các style không có sẵn trong Tailwind ở đây.
+*/
+
+/* Ví dụ: Hiệu ứng khi lật thẻ */
+.flashcard-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+}
+
+.flashcard-container.flipped .flashcard-inner {
+    transform: rotateY(180deg);
+}
+
+.flashcard-front, .flashcard-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden; /* Safari */
+    backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 1rem; /* rounded-2xl */
+    padding: 1.5rem; /* p-6 */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); /* shadow-lg */
+}
+
+.flashcard-front {
+    background-color: #DBEAFE; /* blue-100 */
+    color: #1E40AF; /* blue-800 */
+}
+
+.flashcard-back {
+    background-color: #ECFDF5; /* green-100 */
+    color: #065F46; /* green-800 */
+    transform: rotateY(180deg);
+}
