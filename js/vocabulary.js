@@ -25,19 +25,34 @@ function updateProgressBar() {
 }
 
 /**
- * Phát âm từ hiện tại sử dụng Web Speech API.
- * Nếu không hỗ trợ, sẽ in lỗi ra console.
+ * Phát âm từ hiện tại sử dụng tệp âm thanh hoặc Web Speech API.
+ * @param {string} word - Từ tiếng Anh cần phát âm.
+ * @param {string|null} audioPath - Đường dẫn đến tệp âm thanh (nếu có).
  */
-function pronounceWord(word) {
-    if ('speechSynthesis' in window) {
+function pronounceWord(word, audioPath) {
+    if (audioPath) {
+        const audio = new Audio(audioPath);
+        audio.play().then(() => {
+            console.log(`Đã phát âm thanh từ: ${audioPath}`);
+        }).catch(error => {
+            console.warn(`Không thể phát tệp âm thanh '${audioPath}':`, error);
+            // Fallback sang Web Speech API nếu không thể phát file audio
+            if ('speechSynthesis' in window) {
+                console.log(`Fallback sang Web Speech API cho từ: ${word}`);
+                const utterance = new SpeechSynthesisUtterance(word);
+                utterance.lang = 'en-US'; // Ngôn ngữ tiếng Anh
+                speechSynthesis.speak(utterance);
+            } else {
+                console.warn("Trình duyệt của bạn không hỗ trợ Web Speech API.");
+            }
+        });
+    } else if ('speechSynthesis' in window) {
+        console.log(`Phát âm bằng Web Speech API cho từ: ${word} (không có file audio).`);
         const utterance = new SpeechSynthesisUtterance(word);
         utterance.lang = 'en-US'; // Ngôn ngữ tiếng Anh
         speechSynthesis.speak(utterance);
     } else {
-        console.warn("Trình duyệt của bạn không hỗ trợ Web Speech API.");
-        // Bạn có thể thêm fallback bằng cách phát file audio nếu có
-        // const audio = new Audio(audioPath);
-        // audio.play();
+        console.warn("Không có tệp âm thanh và trình duyệt không hỗ trợ Web Speech API.");
     }
 }
 
@@ -74,7 +89,8 @@ export function renderFlashcard(wordData) {
 
     // Gắn sự kiện cho nút phát âm
     pronounceBtn.onclick = () => {
-        pronounceWord(wordData.word);
+        // Truyền cả từ và đường dẫn audio vào hàm pronounceWord
+        pronounceWord(wordData.word, wordData.audio);
     };
 
     // Cập nhật tiến độ
