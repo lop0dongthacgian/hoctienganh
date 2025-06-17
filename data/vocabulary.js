@@ -8,13 +8,13 @@ export const vocabularyData = [
         word: "Hello",
         translation: "Xin chào",
         image: "https://placehold.co/150x150/80e7b9/ffffff?text=Hello",
-        audio: "audio/hello.mp3" // Đặt file audio vào thư mục 'audio' trong dự án
+        audio: "audio/hello.mp3" // <-- Đường dẫn đến tệp âm thanh của bạn
     },
     {
         word: "Goodbye",
         translation: "Tạm biệt",
         image: "https://placehold.co/150x150/93c5fd/ffffff?text=Goodbye",
-        audio: "audio/goodbye.mp3"
+        audio: "audio/goodbye.mp3" // <-- Cập nhật đường dẫn này
     },
     {
         word: "Cat",
