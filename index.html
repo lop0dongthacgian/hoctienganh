@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Học tiếng Anh vui nhộn</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #B8E6F0 0%, #D1F2FF 50%, #E8F8FF 100%);
+            overflow-x: hidden;
+            user-select: none;
+            touch-action: manipulation;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .game-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 0;
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        /* Nhóm hình ảnh chính */
+        .main-scene {
+            position: relative;
+            width: 100%;
+            flex: 1;
+        }
+
+        .character {
+            position: absolute;
+            bottom: 60px;
+            left: 0; 
+            width: 180px;
+            height: 180px;
+            background-image: url('image/hs.gif');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            transition: left 0.5s ease-out;
+            z-index: 9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
+        }
+
+        .background-co1 {
+            position: absolute;
+            bottom: 60px;
+            left: 5px;
+            width: 180px;
+            height: 180px;
+            background-image: url('image/co1.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .castle {
+            position: absolute;
+            right: 0;
+            bottom: 60px;
+            width: 160px;
+            height: 160px;
+            z-index: 2;
+        }
+
+        .castle img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop_shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
+        }
+
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            padding-top: 20px;
+            margin-bottom: 200px;
+            z-index: 50;
+            align-items: center;
+            justify-content: flex-start;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .question-container {
+            background: rgba(255, 255, 255, 0.0);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: none;
+            width: 90%;
+            max-width: 600px;
+        }
+
+        .question {
+            font-size: 20px;
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #00008B;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .blanks {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .blank {
+            width: 35px;
+            height: 45px;
+            border-bottom: 4px solid #FF6B6B;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            font-size: 28px;
+            font-weight: bold;
+            color: #E74C3C;
+        }
+
+        .blank:not(:empty) {
+            border-bottom-color: #4ECDC4;
+            color: #2E7D32;
+        }
+
+        .keyboard-container {
+            margin-top: 5px;
+            width: 90%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 100;
+        }
+
+        .keyboard {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .key {
+            width: calc(10% - 8px);
+            max-width: 45px;
+            height: 45px;
+            background: #FFD700;
+            border: 2px solid #FF8C00;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.3s;
+        }
+
+        .key:hover {
+            background: #FFC107;
+            transform: scale(1.05);
+        }
+
+        .key.used {
+            background: #ccc;
+            color: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .controls {
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex-grow: 1;
+            margin: 0 5px;
+        }
+
+        .btn:hover {
+            background: #45a049;
+            transform: scale(1.05);
+        }
+
+        .score-container {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 223, 0, 0.8) 100%);
+            padding: 12px 20px;
+            border-radius: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #2E4057;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            backdrop-filter: blur(10px);
+            flex-grow: 2;
+            text-align: center;
+            margin: 0 5px;
+        }
+
+        .score-container::before {
+            content: "⭐ ";
+            font-size: 20px;
+        }
+
+        .grass-road {
+            position: absolute;
+            z-index: 11;
+            bottom: 0;
+            width: 100%;
+            height: 120px;
+            background-color: transparent;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 10px;
+            box-sizing: border-box;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .grass-road img {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        .grass-text {
+            position: absolute;
+            top: 60px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #FFF;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            z-index: 2;
+            animation: pulse 1.5s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.05); opacity: 0.9; }
+        }
+
+        @keyframes flowersWave {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+
+        #fireworks {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            display: none;
+        }
+
+        .firework {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            animation: fireworkExplode 1s forwards;
+            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.8));
+        }
+
+        @keyframes fireworkExplode {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) scale(0);
+                opacity: 0;
+            }
+        }
+
+        @keyframes fireworkParticle {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--tx), var(--ty)) scale(0);
+                opacity: 0;
+            }
+        }
+
+        .temporary-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.85);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            z-index: 1001;
+            box-shadow: 0 0 30px rgba(255, 255, 0, 0.5);
+            animation: fadeInOut 3s forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translate(-50%, -60%); }
+            20% { opacity: 1; transform: translate(-50%, -50%); }
+            80% { opacity: 1; transform: translate(-50%, -50%); }
+            100% { opacity: 0; transform: translate(-50%, -40%); }
+        }
+
+        .footer-text {
+            position: absolute;
+            bottom: 10px;
+            width: 100%;
+            text-align: center;
+            font-size: 14px;
+            color: #FFFFFF;
+            z-index: 12;
+            font-weight: bold;
+            text-shadow: none;
+        }
+
+        .sound-toggle-btn {
+            padding: 8px 16px;
+            background: #FF5722;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex-grow: 1;
+            margin: 0 5px;
+        }
+
+        .sound-toggle-btn:hover {
+            background: #E64A19;
+            transform: scale(1.05);
+        }
+
+        .sun-overlay {
+            position: absolute;
+            top: -70px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 60px;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        @media (min-width: 768px) {
+            .game-container {
+                min-height: 85vh;
+                max-width: 1200px;
+                margin: 20px auto;
+                border-radius: 20px;
+                box-shadow: 0 10px 50px rgba(0,0,0,0.15);
+            }
+            .content-wrapper {
+                padding: 40px;
+                margin-bottom: 250px;
+            }
+            .question-container {
+                padding: 30px;
+                margin-bottom: 30px;
+                max-width: 800px;
+            }
+            .question {
+                font-size: 32px;
+                margin-bottom: 20px;
+            }
+            .blanks {
+                gap: 15px;
+                margin: 20px 0;
+            }
+            .blank {
+                width: 55px;
+                height: 65px;
+                font-size: 36px;
+                border-bottom: 5px solid #FF6B6B;
+            }
+            .keyboard-container {
+                margin-top: 20px;
+                max-width: 800px;
+            }
+            .keyboard {
+                gap: 12px;
+                justify-content: center;
+                max-width: 700px;
+            }
+            .key {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+                border-radius: 12px;
+                border: 3px solid #FF8C00;
+            }
+            .key:hover {
+                transform: scale(1.1);
+                box-shadow: 0 4px 15px rgba(255, 140, 0, 0.4);
+            }
+            .controls {
+                margin-bottom: 25px;
+                max-width: 800px;
+                padding: 0 20px;
+            }
+            .btn {
+                padding: 18px 35px;
+                font-size: 22px;
+                border-radius: 30px;
+            }
+            .score-container {
+                padding: 18px 30px;
+                font-size: 22px;
+                border-radius: 25px;
+            }
+            .score-container::before {
+                font-size: 24px;
+            }
+            .sound-toggle-btn {
+                padding: 12px 20px;
+                font-size: 18px;
+                border-radius: 25px;
+            }
+            .character {
+                bottom: 80px;
+                width: 200px;
+                height: 200px;
+            }
+            .castle {
+                bottom: 80px;
+                width: 220px;
+                height: 220px;
+            }
+            .sun-overlay {
+                width: 80px;
+                height: 80px;
+                top: -90px;
+            }
+            .grass-road {
+                height: 150px;
+                border-bottom-left-radius: 20px;
+                border-bottom-right-radius: 20px;
+            }
+            .grass-text {
+                font-size: 28px;
+                top: 70px;
+            }
+            .temporary-message {
+                font-size: 32px;
+                padding: 30px 60px;
+                border-radius: 20px;
+            }
+            .footer-text {
+                font-size: 16px;
+                bottom: 15px;
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .game-container {
+                max-width: 1400px;
+                min-height: 90vh;
+            }
+            .question {
+                font-size: 38px;
+            }
+            .blank {
+                width: 65px;
+                height: 75px;
+                font-size: 42px;
+            }
+            .key {
+                width: 70px;
+                height: 70px;
+                font-size: 28px;
+            }
+            .btn {
+                padding: 22px 40px;
+                font-size: 24px;
+            }
+            .score-container {
+                padding: 22px 35px;
+                font-size: 24px;
+            }
+            .character {
+                width: 240px;
+                height: 240px;
+            }
+            .castle {
+                width: 260px;
+                height: 260px;
+            }
+            .grass-text {
+                font-size: 32px;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .game-container {
+                border-radius: 0;
+                min-height: 100vh;
+            }
+            .content-wrapper {
+                padding: 15px;
+                margin-bottom: 220px;
+            }
+            .question {
+                font-size: 18px;
+            }
+            .blank {
+                width: 30px;
+                height: 40px;
+                font-size: 24px;
+            }
+            .keyboard-container {
+                margin-top: 5px;
+            }
+            .key {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+            }
+            .btn {
+                padding: 10px 20px;
+                font-size: 16px;
+            }
+            .score-container {
+                padding: 10px 16px;
+                font-size: 16px;
+            }
+            .sound-toggle-btn {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+        }
+
+        @media (max-height: 600px) {
+            .content-wrapper {
+                padding-top: 10px;
+                margin-bottom: 180px;
+            }
+            .question-container {
+                margin-bottom: 10px;
+            }
+            .keyboard-container {
+                margin-top: 5px;
+            }
+            .controls {
+                margin-top: 10px;
+            }
+            .character, .castle {
+                bottom: 40px;
+            }
+            .grass-road {
+                height: 100px;
+                border-bottom-left-radius: 0 !important;
+                border-bottom-right-radius: 0 !important;
+            }
+            .game-container {
+                border-radius: 0 !important;
+            }
+            .temporary-message {
+                font-size: 20px;
+                padding: 15px 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- Nhóm hình ảnh chính -->
+        <div class="main-scene">
+            <div class="character" id="character"></div>
+            <div class="background-co1"></div>
+            <div class="castle">
+                <img src="image/th1.png" alt="Castle">
+                <img src="image/mt1.gif" alt="Mặt trời" class="sun-overlay">
+            </div>
+        </div>
+
+        <!-- Nội dung trò chơi -->
+        <div class="content-wrapper">
+            <div class="controls">
+                <button class="btn" id="reset">Chơi lại</button>
+                <div class="score-container" id="score">Điểm: 0</div>
+                <button class="sound-toggle-btn" id="soundToggle">Tắt âm thanh</button>
+            </div>
+            <div class="question-container">
+                <div class="question" id="question">Câu hỏi sẽ hiển thị ở đây</div>
+                <div class="blanks" id="blanks"></div>
+            </div>
+            <div class="keyboard-container">
+                <div class="keyboard" id="keyboard"></div>
+            </div>
+        </div>
+
+        <!-- Chân trang -->
+        <div class="grass-road">
+            <img src="image/hoa.png" alt="Grass with flowers">
+            <div class="grass-text">Hoàn thành bài tập để đến trường</div>
+        </div>
+
+        <!-- Hiệu ứng pháo hoa -->
+        <div id="fireworks"></div>
+
+        <!-- Bản quyền -->
+        <div class="footer-text">© Lớp học 0 đồng Trung Bình A3</div>
+    </div>
+
+    <!-- Script -->
+    <script src="questions.js"></script>
+    <script>
+        // Biến allQuestions giờ đã được định nghĩa trong questions.js
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let currentAnswer = '';
+        let usedLetters = [];
+        let selectedQuestions = [];
+        const totalQuestions = 20;
+        let soundOn = false;
+        let backgroundMusic = new Audio('audio/nen.mp3');
+        backgroundMusic.loop = true;
+        let correctSound = new Audio('audio/correct.mp3');
+        let wrongSound = new Audio('audio/wrong.mp3');
+
+        function initGame() {
+            selectRandomQuestions();
+            loadQuestion(selectedQuestions[currentQuestionIndex]);
+            updateScore();
+            setupKeyboard();
+            updateCharacterAndCastlePosition();
+            window.addEventListener('resize', updateCharacterAndCastlePosition);
+            document.getElementById('soundToggle').addEventListener('click', toggleSound);
+            document.addEventListener('keydown', initialSoundPlay, { once: true });
+            document.addEventListener('click', initialSoundPlay, { once: true });
+        }
+
+        function initialSoundPlay() {
+            if (!soundOn) {
+                toggleSound();
+            }
+        }
+
+        function toggleSound() {
+            soundOn = !soundOn;
+            const soundToggleButton = document.getElementById('soundToggle');
+            if (soundOn) {
+                backgroundMusic.play();
+                soundToggleButton.textContent = 'Tắt âm thanh';
+            } else {
+                backgroundMusic.pause();
+                soundToggleButton.textContent = 'Bật âm thanh';
+            }
+        }
+
+        function updateCharacterAndCastlePosition() {
+            const character = document.getElementById('character');
+            const castle = document.querySelector('.castle');
+            character.style.left = `0px`;
+            castle.style.right = `0px`;
+        }
+
+        function selectRandomQuestions() {
+            const shuffled = [...allQuestions].sort(() => 0.5 - Math.random());
+            selectedQuestions = shuffled.slice(0, Math.min(totalQuestions, allQuestions.length));
+        }
+
+        function loadQuestion(question) {
+            currentAnswer = question.plainAnswer.join('');
+            usedLetters = [];
+            document.getElementById('question').textContent = question.question;
+            createBlanks();
+            resetKeyboard();
+            const character = document.getElementById('character');
+            character.style.left = `0px`;
+        }
+
+        function createBlanks() {
+            const blanksContainer = document.getElementById('blanks');
+            blanksContainer.innerHTML = '';
+            for (let i = 0; i < currentAnswer.length; i++) {
+                const blank = document.createElement('div');
+                blank.className = 'blank';
+                blank.id = `blank-${i}`;
+                blanksContainer.appendChild(blank);
+            }
+        }
+
+        function setupKeyboard() {
+            const keyboard = document.getElementById('keyboard');
+            keyboard.innerHTML = '';
+            for (let i = 65; i <= 90; i++) {
+                const letter = String.fromCharCode(i);
+                const key = document.createElement('div');
+                key.className = 'key';
+                key.textContent = letter;
+                key.id = `key-${letter}`;
+                key.addEventListener('click', () => handleGuess(letter));
+                keyboard.appendChild(key);
+            }
+        }
+
+        function resetKeyboard() {
+            document.querySelectorAll('.key').forEach(key => {
+                key.classList.remove('used');
+            });
+        }
+
+        function handleGuess(letter) {
+            if (usedLetters.includes(letter)) return;
+            usedLetters.push(letter);
+            document.getElementById(`key-${letter}`).classList.add('used');
+            if (currentAnswer.includes(letter)) {
+                if (soundOn) {
+                    correctSound.currentTime = 0;
+                    correctSound.play();
+                }
+                updateBlanks(letter);
+                if (checkComplete()) {
+                    score++;
+                    updateScore();
+                    moveCharacterToCastle();
+                    showFireworks();
+                    setTimeout(() => {
+                        currentQuestionIndex++;
+                        if (currentQuestionIndex < selectedQuestions.length) {
+                            loadQuestion(selectedQuestions[currentQuestionIndex]);
+                        } else {
+                            selectRandomQuestions();
+                            currentQuestionIndex = 0;
+                            loadQuestion(selectedQuestions[currentQuestionIndex]);
+                            showTemporaryMessage("Chúc mừng! Bắt đầu vòng mới!");
+                        }
+                    }, 6000);
+                } else {
+                    moveCharacter(true);
+                }
+            } else {
+                if (soundOn) {
+                    wrongSound.currentTime = 0;
+                    wrongSound.play();
+                }
+                moveCharacter(false);
+            }
+        }
+
+        function updateBlanks(letter) {
+            for (let i = 0; i < currentAnswer.length; i++) {
+                if (currentAnswer[i] === letter) {
+                    document.getElementById(`blank-${i}`).textContent = letter;
+                }
+            }
+        }
+
+        function moveCharacter(forward) {
+            const character = document.getElementById('character');
+            const gameContainer = document.querySelector('.game-container');
+            const currentLeft = parseFloat(character.style.left) || 0;
+            const step = 0.05 * gameContainer.offsetWidth;
+            const characterWidth = character.offsetWidth;
+            const castle = document.querySelector('.castle');
+            const castleRight = parseFloat(castle.style.right) || 0;
+            const castleLeft = gameContainer.offsetWidth - castleRight - castle.offsetWidth;
+            const maxLeft = castleLeft + (castle.offsetWidth / 2) - (characterWidth / 2);
+            const newLeft = forward
+                ? Math.min(currentLeft + step, maxLeft)
+                : Math.max(currentLeft - step, 0);
+            character.style.left = `${newLeft}px`;
+        }
+
+        function moveCharacterToCastle() {
+            const character = document.getElementById('character');
+            const castle = document.querySelector('.castle');
+            const gameContainer = document.querySelector('.game-container');
+            const castleRight = parseFloat(castle.style.right) || 0;
+            const castleLeft = gameContainer.offsetWidth - castleRight - castle.offsetWidth;
+            const characterWidth = character.offsetWidth;
+            const targetLeft = castleLeft + (castle.offsetWidth / 2) - (characterWidth / 2);
+            character.style.transition = 'left 1.5s ease-in-out';
+            character.style.left = `${targetLeft}px`;
+            setTimeout(() => {
+                character.style.transition = 'left 0.5s ease-out';
+            }, 1500);
+        }
+
+        function checkComplete() {
+            for (let i = 0; i < currentAnswer.length; i++) {
+                if (!document.getElementById(`blank-${i}`).textContent) return false;
+            }
+            return true;
+        }
+
+        function updateScore() {
+            document.getElementById('score').textContent = `Điểm: ${score}`;
+        }
+
+        function resetGame() {
+            currentQuestionIndex = 0;
+            score = 0;
+            selectRandomQuestions();
+            loadQuestion(selectedQuestions[currentQuestionIndex]);
+            updateScore();
+            updateCharacterAndCastlePosition();
+        }
+
+        function showFireworks() {
+            const celebration = document.getElementById('fireworks');
+            celebration.innerHTML = '';
+            celebration.style.display = 'block';
+            for (let i = 0; i < 80; i++) {
+                setTimeout(() => {
+                    createFirework();
+                }, i * 70);
+            }
+            setTimeout(() => {
+                celebration.style.display = 'none';
+            }, 3000);
+        }
+
+        function createFirework() {
+            const celebration = document.getElementById('fireworks');
+            const firework = document.createElement('div');
+            firework.className = 'firework';
+            const colors = ['#FF5252', '#FFD700', '#69F0AE', '#40C4FF', '#7C4DFF'];
+            firework.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            firework.style.left = `${Math.random() * 80 + 10}%`;
+            firework.style.top = `${30 + Math.random() * 50}%`;
+            celebration.appendChild(firework);
+            setTimeout(() => {
+                firework.remove();
+            }, 1000);
+        }
+
+        function showTemporaryMessage(message) {
+            const messageElement = document.createElement('div');
+            messageElement.className = 'temporary-message';
+            messageElement.textContent = message;
+            document.body.appendChild(messageElement);
+            setTimeout(() => {
+                document.body.removeChild(messageElement);
+            }, 3000);
+        }
+
+        document.getElementById('reset').addEventListener('click', resetGame);
+        window.addEventListener('DOMContentLoaded', initGame);
+
+        document.addEventListener('keydown', (e) => {
+            const key = e.key.toUpperCase();
+            if (/^[A-Z]$/.test(key)) {
+                const keyElement = document.getElementById(`key-${key}`);
+                if (keyElement && !keyElement.classList.contains('used')) {
+                    keyElement.click();
+                    keyElement.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        keyElement.style.transform = '';
+                    }, 100);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
